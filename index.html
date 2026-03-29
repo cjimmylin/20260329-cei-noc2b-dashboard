@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapestry Census Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ==================== Header ==================== -->
+<header class="header">
+    <div class="header-title">
+        <h1><span>Tapestry Census</span> Explorer</h1>
+        <div class="header-subtitle">3,044 AI Governance Statements &mdash; Complete Corpus Overview</div>
+    </div>
+    <div class="header-right">
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">&#9790;</button>
+    </div>
+</header>
+
+<!-- ==================== Tab Navigation ==================== -->
+<nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" data-tab="overview" role="tab">Census Overview</button>
+    <button class="tab-btn" data-tab="findings" role="tab">Findings Deep Dive</button>
+    <button class="tab-btn" data-tab="institutional" role="tab">Institutional</button>
+    <button class="tab-btn" data-tab="temporal" role="tab">Temporal</button>
+    <button class="tab-btn" data-tab="crosslayer" role="tab">Cross-Layer</button>
+    <button class="tab-btn" data-tab="gaps" role="tab">Gap Analysis</button>
+    <button class="tab-btn" data-tab="profiles" role="tab">Profiles</button>
+    <button class="tab-btn" data-tab="explorer" role="tab">Explorer</button>
+</nav>
+
+<!-- ==================== Tab Content ==================== -->
+<main class="tab-content">
+
+    <!-- ==================== KPI Row (always visible) ==================== -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-value">3,044</div>
+            <div class="kpi-label">Total Statements</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">2,021</div>
+            <div class="kpi-label">Genome Scored</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">1,611</div>
+            <div class="kpi-label">Ontology Scored</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">107+</div>
+            <div class="kpi-label">Countries</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">25+</div>
+            <div class="kpi-label">Languages</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">11</div>
+            <div class="kpi-label">Org Types</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">6</div>
+            <div class="kpi-label">Policy Families</div>
+        </div>
+    </div>
+
+    <!-- ==================== Filter Bar (tabs 2-6) ==================== -->
+    <div class="filter-bar" id="filter-bar">
+        <label class="filter-label">Filters:</label>
+        <select id="filter-orgtype" class="filter-select">
+            <option value="all">All Org Types</option>
+        </select>
+        <select id="filter-region" class="filter-select">
+            <option value="all">All Regions</option>
+        </select>
+        <select id="filter-yearband" class="filter-select">
+            <option value="all">All Year Bands</option>
+        </select>
+        <select id="filter-binding" class="filter-select">
+            <option value="all">All Binding Natures</option>
+        </select>
+        <button id="filter-reset" class="filter-reset-btn">Reset</button>
+    </div>
+
+    <!-- ==================== TAB 1: Census Overview ==================== -->
+    <section class="tab-pane active" id="pane-overview" role="tabpanel">
+
+        <div class="tab-guide" id="guide-overview"></div>
+
+        <!-- P1: Disclosure Banner -->
+        <div class="disclosure-banner">
+            Analytical perspectives in this dashboard are heuristic devices representing disciplinary lenses applied through AI-assisted analysis. They are not endorsements by named external scholars.
+        </div>
+
+        <!-- P19: How to Read This Dashboard -->
+        <div class="how-to-read" id="how-to-read">
+            <h3 class="how-to-read-toggle" id="how-to-read-toggle">How to Read This Dashboard <span class="toggle-icon">&#9660;</span></h3>
+            <div class="how-to-read-content" id="how-to-read-content">
+                <p><strong>What this data shows:</strong> Patterns in the text of 3,044 AI governance documents from around the world.</p>
+                <p><strong>What it cannot show:</strong> Whether governance is effective, whether it changes behavior, or whether organizations that lack formal statements are actually ungoverned.</p>
+                <p><strong>Confidence levels:</strong> Each finding is tagged as <span class="confidence-badge confidence-high">HIGH</span> (large sample, strong effect), <span class="confidence-badge confidence-moderate">MODERATE</span> (solid evidence with known limitations), or <span class="confidence-badge confidence-caution">INTERPRET WITH CAUTION</span> (small sample or potential artifacts).</p>
+                <p><strong>Geographic bias:</strong> This database over-represents English-language, European, and North American sources. Approximately 85% of documents are in English.</p>
+                <p><strong>The "governance families":</strong> The six families are statistical groupings, not definitive categories. Some documents sit between families, and the grouping depends on the analysis method used.</p>
+            </div>
+        </div>
+
+        <!-- P12: Interpretive chart titles -->
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Two-Thirds of Statements Have Full Scoring Coverage</h3>
+                <div class="chart-container" id="chart-layer-coverage" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>AI Governance Output Accelerated Sharply After 2017</h3>
+                <div class="chart-container" id="chart-growth-area" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Governments Dominate, but 10 Other Sectors Contribute</h3>
+                <div class="chart-container" id="chart-orgtype-treemap" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>Europe and North America Account for 55% of Statements</h3>
+                <div class="chart-container" id="chart-region-bar" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <!-- Major Findings Summary -->
+        <div class="findings-section" id="findings-overview">
+            <h3 class="findings-title">Ten Headline Findings</h3>
+            <div class="findings-grid" id="findings-grid">
+                <!-- JS will populate from EXPERT_TEXTS.findings -->
+            </div>
+        </div>
+
+        <div class="narrative-box" id="narrative-overview">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 1b: Findings Deep Dive ==================== -->
+    <section class="tab-pane" id="pane-findings" role="tabpanel">
+
+        <div class="tab-guide" id="guide-findings"></div>
+
+        <!-- Findings Subtab Navigation -->
+        <nav class="findings-subtab-nav" role="tablist">
+            <button class="findings-subtab-btn active" data-finding="f1" role="tab">F1 Enforcement</button>
+            <button class="findings-subtab-btn" data-finding="f2" role="tab">F2 Industry</button>
+            <button class="findings-subtab-btn" data-finding="f3" role="tab">F3 Temporal</button>
+            <button class="findings-subtab-btn" data-finding="f4" role="tab">F4 Sacred-Secular</button>
+            <button class="findings-subtab-btn" data-finding="f5" role="tab">F5 Concepts</button>
+            <button class="findings-subtab-btn" data-finding="f6" role="tab">F6 Religious</button>
+            <button class="findings-subtab-btn" data-finding="f7" role="tab">F7 Form/Content</button>
+            <button class="findings-subtab-btn" data-finding="f8" role="tab">F8 Principles</button>
+            <button class="findings-subtab-btn" data-finding="f9" role="tab">F9 Traditions</button>
+            <button class="findings-subtab-btn" data-finding="f10" role="tab">F10 Professional</button>
+            <button class="findings-subtab-btn" data-finding="noc2" role="tab">NoC2 Analysis</button>
+            <button class="findings-subtab-btn" data-finding="noc2b" role="tab">NoC2b Robustness</button>
+        </nav>
+
+        <!-- F1: Enforcement -->
+        <div class="finding-pane active" id="finding-f1">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">1</span> The Enforcement Gap <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">Rights-based AI governance documents are overwhelmingly non-binding, creating a structural enforcement deficit.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Rights-Based Documents Are Overwhelmingly Non-Binding</h3>
+                    <div class="chart-container" id="chart-f1-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Enforcement Mechanisms Vary Dramatically Across Governance Families</h3>
+                    <div class="chart-container" id="chart-f1-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f1"></div>
+            <div class="literature-section" id="literature-f1">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f1"></div>
+        </div>
+
+        <!-- F2: Industry -->
+        <div class="finding-pane" id="finding-f2">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">2</span> The Industry Voluntarism Pattern <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">Industry produces zero legally binding AI governance, relying entirely on voluntary and advisory instruments.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Industry Produces Zero Legally Binding AI Governance</h3>
+                    <div class="chart-container" id="chart-f2-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Binding Nature Diverges Sharply by Institutional Sector</h3>
+                    <div class="chart-container" id="chart-f2-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f2"></div>
+            <div class="literature-section" id="literature-f2">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f2"></div>
+        </div>
+
+        <!-- F3: Temporal -->
+        <div class="finding-pane" id="finding-f3">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">3</span> The Temporal Precedence Pattern <span class="confidence-badge confidence-moderate">MODERATE</span></h2>
+                <p class="finding-subtitle">Indigenous and religious frameworks predate government AI strategies, challenging assumptions about governance chronology.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Indigenous and Religious Frameworks Predate Government AI Strategies</h3>
+                    <div class="chart-container" id="chart-f3-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Each Sector Entered the Governance Field at Different Times</h3>
+                    <div class="chart-container" id="chart-f3-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f3"></div>
+            <div class="literature-section" id="literature-f3">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f3"></div>
+        </div>
+
+        <!-- F4: Sacred-Secular -->
+        <div class="finding-pane" id="finding-f4">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">4</span> The Sacred-Secular Divide <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">76.5% of statements score zero on sacred-secular dimensions, revealing a deep conceptual gulf in AI governance.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>76.5% of Statements Score Zero on Sacred-Secular Dimensions</h3>
+                    <div class="chart-container" id="chart-f4-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Only the Sacred-Traditional Cluster Engages Religious Concepts</h3>
+                    <div class="chart-container" id="chart-f4-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f4"></div>
+            <div class="literature-section" id="literature-f4">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f4"></div>
+        </div>
+
+        <!-- F5: Concepts -->
+        <div class="finding-pane" id="finding-f5">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">5</span> The Conceptual Marginalization <span class="confidence-badge confidence-moderate">MODERATE</span></h2>
+                <p class="finding-subtitle">Most tradition-specific concepts appear in fewer than 2% of statements, indicating systematic marginalization of non-Western frameworks.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Most Tradition-Specific Concepts Appear in Fewer Than 2% of Statements</h3>
+                    <div class="chart-container" id="chart-f5-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>16 of 21 Non-Western Concepts Have No OECD/EU Framework Equivalent</h3>
+                    <div class="chart-container" id="chart-f5-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f5"></div>
+            <div class="literature-section" id="literature-f5">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f5"></div>
+        </div>
+
+        <!-- F6: Religious -->
+        <div class="finding-pane" id="finding-f6">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">6</span> The Religious Governance Surge <span class="confidence-badge confidence-caution">INTERPRET WITH CAUTION</span></h2>
+                <p class="finding-subtitle">Religious governance grew from near-zero to 111 statements in 6 years, but collection bias may inflate the trend.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Religious Governance Grew from Near-Zero to 111 Statements in 6 Years</h3>
+                    <div class="chart-container" id="chart-f6-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>The Sacred-Traditional Cluster Is the Fastest-Growing Policy Family</h3>
+                    <div class="chart-container" id="chart-f6-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f6"></div>
+            <div class="literature-section" id="literature-f6">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f6"></div>
+        </div>
+
+        <!-- F7: Form/Content -->
+        <div class="finding-pane" id="finding-f7">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">7</span> The Form-Content Asymmetry <span class="confidence-badge confidence-moderate">MODERATE</span></h2>
+                <p class="finding-subtitle">Institutional form alone nearly matches full model clustering quality, suggesting governance structure drives content.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Institutional Form Alone Nearly Matches Full Model Clustering Quality</h3>
+                    <div class="chart-container" id="chart-f7-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>The Form Channel Carries 59% of Total Variance with 35% of Features</h3>
+                    <div class="chart-container" id="chart-f7-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f7"></div>
+            <div class="literature-section" id="literature-f7">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f7"></div>
+        </div>
+
+        <!-- F8: Principles -->
+        <div class="finding-pane" id="finding-f8">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">8</span> The Principles Divergence <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">Seven of eight AI ethics principles diverge significantly across sectors, challenging the narrative of global consensus.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Seven of Eight AI Ethics Principles Diverge Significantly Across Sectors</h3>
+                    <div class="chart-container" id="chart-f8-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Safety Is Most Convergent, Sustainability Most Contested</h3>
+                    <div class="chart-container" id="chart-f8-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f8"></div>
+            <div class="literature-section" id="literature-f8">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f8"></div>
+        </div>
+
+        <!-- F9: Traditions -->
+        <div class="finding-pane" id="finding-f9">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">9</span> The Tradition Coherence Pattern <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">Indigenous governance concepts form a near-perfectly correlated triad, revealing deep internal coherence within traditions.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Indigenous Governance Concepts Form a Near-Perfectly Correlated Triad</h3>
+                    <div class="chart-container" id="chart-f9-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Tradition-Specific Fields Show High Within-Tradition Coherence</h3>
+                    <div class="chart-container" id="chart-f9-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f9"></div>
+            <div class="literature-section" id="literature-f9">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f9"></div>
+        </div>
+
+        <!-- F10: Professional -->
+        <div class="finding-pane" id="finding-f10">
+            <div class="finding-header">
+                <h2 class="finding-h2"><span class="finding-num">10</span> The Professional Governance Model <span class="confidence-badge confidence-high">HIGH CONFIDENCE</span></h2>
+                <p class="finding-subtitle">Professional bodies use non-state enforcement at 5x the global rate, operating almost entirely outside state regulation.</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Professional Bodies Use Non-State Enforcement at 5x the Global Rate</h3>
+                    <div class="chart-container" id="chart-f10-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>The Professional Cluster Operates Almost Entirely Outside State Regulation</h3>
+                    <div class="chart-container" id="chart-f10-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-f10"></div>
+            <div class="literature-section" id="literature-f10">
+                <!-- JS will render from FINDINGS_LIT -->
+            </div>
+            <div class="argument-section" id="argument-f10"></div>
+        </div>
+
+        <!-- NoC2b: Robustness & Decomposition Analyses -->
+        <div class="finding-pane" id="finding-noc2b">
+            <div class="finding-header">
+                <h2 class="finding-h2">NoC2 Robustness Suite (NoC2b) <span class="confidence-badge confidence-moderate">MODERATE</span></h2>
+                <p class="finding-subtitle">Six follow-up analyses testing the form-vs-content decomposition</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>A4: WC Normalization — NoC2 Cluster Survival</h3>
+                    <div class="chart-container" id="chart-noc2b-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>A5: Form vs Content — ARI Comparison</h3>
+                    <div class="chart-container" id="chart-noc2b-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>A6: NC3 Megacluster Decomposition</h3>
+                    <div class="chart-container" id="chart-noc2b-3" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>A7: NC3 Convergence Trajectory Over Time</h3>
+                    <div class="chart-container" id="chart-noc2b-4" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>A5b: Nine Institutional Archetypes (C2-Only k=9)</h3>
+                    <div class="chart-container" id="chart-noc2b-5" style="height:420px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>A6/A7: NC3 Sub-Cluster Composition Over Time</h3>
+                    <div class="chart-container" id="chart-noc2b-6" style="height:380px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-noc2b"></div>
+            <div class="literature-section" id="literature-noc2b"></div>
+            <div class="argument-section" id="argument-noc2b"></div>
+        </div>
+
+        <!-- NoC2: Content-Only Clustering -->
+        <div class="finding-pane" id="finding-noc2">
+            <div class="finding-header">
+                <h2 class="finding-h2">Content-Only Clustering (NoC2) <span class="confidence-badge confidence-moderate">MODERATE</span></h2>
+                <p class="finding-subtitle">What happens when institutional form is removed?</p>
+            </div>
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <h3>Silhouette Score by k</h3>
+                    <div class="chart-container" id="chart-noc2-1" style="height:400px;"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>How Canonical Families Map to Content Clusters</h3>
+                    <div class="chart-container" id="chart-noc2-2" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="evidence-table-container" id="table-noc2"></div>
+            <div class="literature-section" id="literature-noc2"></div>
+            <div class="argument-section" id="argument-noc2"></div>
+        </div>
+
+    </section>
+
+    <!-- ==================== TAB 2: Institutional ==================== -->
+    <section class="tab-pane" id="pane-institutional" role="tabpanel">
+
+        <div class="tab-guide" id="guide-institutional"></div>
+
+        <div class="chart-card">
+            <h3>Government Governance Is Concentrated in Europe and North America</h3>
+            <div class="chart-container" id="chart-org-region-heatmap" style="height: 500px;"></div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Industry Produces Zero Legally Binding AI Governance</h3>
+                <div class="chart-container" id="chart-org-binding-bar" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>The US and UK Together Produce 30% of All Statements</h3>
+                <div class="chart-container" id="chart-top-countries" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Most Governance Targets National Scope</h3>
+                <div class="chart-container" id="chart-geo-scope" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>Guidelines and Frameworks Are the Dominant Instrument Types</h3>
+                <div class="chart-container" id="chart-stmt-types" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="findings-section" id="findings-institutional">
+            <h3 class="findings-title">Key Institutional Findings</h3>
+            <div class="findings-list" id="findings-list-institutional"></div>
+        </div>
+
+        <div class="narrative-box" id="narrative-institutional">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 3: Temporal ==================== -->
+    <section class="tab-pane" id="pane-temporal" role="tabpanel">
+
+        <div class="tab-guide" id="guide-temporal"></div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Government and Civil Society Drive the 2023-2025 Surge</h3>
+                <div class="chart-container chart-tall" id="chart-temporal-area" style="height: 500px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>The Corpus Grew from 100 to 3,000 Statements in 8 Years</h3>
+                <div class="chart-container chart-tall" id="chart-cumulative-curve" style="height: 500px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Advisory Governance Has Dominated Every Year Since 2017</h3>
+                <div class="chart-container" id="chart-binding-time" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>Religious and Professional Governance Emerged Primarily After 2022</h3>
+                <div class="chart-container" id="chart-org-yearband" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Language Diversity Lags Behind Statement Volume Growth</h3>
+            <div class="chart-container" id="chart-lang-diversity" style="height: 400px;"></div>
+        </div>
+
+        <div class="findings-section" id="findings-temporal">
+            <h3 class="findings-title">Key Temporal Findings</h3>
+            <div class="findings-list" id="findings-list-temporal"></div>
+        </div>
+
+        <div class="narrative-box" id="narrative-temporal">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 4: Cross-Layer ==================== -->
+    <section class="tab-pane" id="pane-crosslayer" role="tabpanel">
+
+        <div class="tab-guide" id="guide-crosslayer"></div>
+
+        <div class="chart-card">
+            <h3>2,021 Statements Have All Three Scoring Layers</h3>
+            <div class="chart-container" id="chart-layer-overlap" style="height: 400px;"></div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Genome Coverage Varies by Sector Due to Acquisition Timing</h3>
+                <div class="chart-container" id="chart-coverage-orgtype" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>All Regions Have Near-Complete Ontology and Taxonomy Coverage</h3>
+                <div class="chart-container" id="chart-coverage-region" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="narrative-box" id="narrative-crosslayer">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 5: Gap Analysis ==================== -->
+    <section class="tab-pane" id="pane-gaps" role="tabpanel">
+
+        <div class="tab-guide" id="guide-gaps"></div>
+
+        <div class="chart-card">
+            <h3>Significant Coverage Gaps Exist in Africa, Latin America, and Middle East</h3>
+            <div class="chart-container" id="chart-coverage-heatmap" style="height: 500px;"></div>
+        </div>
+
+        <div class="chart-grid-2">
+            <div class="chart-card">
+                <h3>Intergovernmental and Industry Statements Are Disproportionately Thin</h3>
+                <div class="chart-container" id="chart-thin-stmts" style="height: 400px;"></div>
+            </div>
+            <div class="chart-card">
+                <h3>Most Sector &times; Region Combinations Lack Legally Binding Instruments</h3>
+                <div class="chart-container" id="chart-binding-gaps" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Pre-2017 Coverage Is Too Sparse for Robust Temporal Claims</h3>
+            <div class="chart-container" id="chart-year-gaps" style="height: 400px;"></div>
+        </div>
+
+        <div class="findings-section" id="findings-gaps">
+            <h3 class="findings-title">Key Gap Findings</h3>
+            <div class="findings-list" id="findings-list-gaps"></div>
+        </div>
+
+        <div class="narrative-box" id="narrative-gaps">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 6: Profiles ==================== -->
+    <section class="tab-pane" id="pane-profiles" role="tabpanel">
+
+        <div class="tab-guide" id="guide-profiles"></div>
+
+        <div class="chart-card">
+            <h3>Only Government Produces Significant Legally Binding AI Governance</h3>
+            <div class="chart-container" id="chart-binding-profile" style="height: 400px;"></div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Religious and Indigenous Governance Is Primarily Institutional, Not National</h3>
+            <div class="chart-container" id="chart-geoscope-profile" style="height: 400px;"></div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Each Sector Favors Distinct Governance Instrument Types</h3>
+            <div class="chart-container" id="chart-stmttype-profile" style="height: 500px;"></div>
+        </div>
+
+        <div class="findings-section" id="findings-profiles">
+            <h3 class="findings-title">Key Policy Family Findings</h3>
+            <div class="findings-list" id="findings-list-profiles"></div>
+        </div>
+
+        <div class="narrative-box" id="narrative-profiles">
+            <!-- JS will populate from EXPERT_TEXTS -->
+        </div>
+    </section>
+
+    <!-- ==================== TAB 7: Explorer ==================== -->
+    <section class="tab-pane" id="pane-explorer" role="tabpanel">
+
+        <div class="tab-guide" id="guide-explorer"></div>
+
+        <div class="explorer-controls">
+            <input type="text" id="explorer-search" class="explorer-search" placeholder="Search by key or title...">
+            <select id="exp-filter-orgtype" class="explorer-filter"><option value="">All Org Types</option></select>
+            <select id="exp-filter-region" class="explorer-filter"><option value="">All Regions</option></select>
+            <select id="exp-filter-year" class="explorer-filter"><option value="">All Years</option></select>
+            <select id="exp-filter-binding" class="explorer-filter"><option value="">All Binding</option></select>
+            <select id="exp-filter-stmttype" class="explorer-filter"><option value="">All Stmt Types</option></select>
+            <select id="exp-filter-srctype" class="explorer-filter"><option value="">All Source Types</option></select>
+            <select id="exp-filter-extract" class="explorer-filter"><option value="">Extract</option><option value="yes">Has Extract</option><option value="no">No Extract</option></select>
+            <select id="exp-filter-wordcount" class="explorer-filter"><option value="">All Word Counts</option><option value="lte500">&le; 500</option><option value="500-1000">500 – 1,000</option><option value="1000-1500">1,000 – 1,500</option><option value="1500-2000">1,500 – 2,000</option><option value="gt2000">&gt; 2,000</option></select>
+            <select id="exp-filter-family" class="explorer-filter"><option value="">All Families</option></select>
+            <select id="exp-filter-noc2" class="explorer-filter"><option value="">All NoC2 Clusters</option></select>
+            <span class="explorer-count" id="explorer-count"></span>
+        </div>
+
+        <div class="chart-card">
+            <div class="explorer-table-wrapper">
+                <table class="explorer-table" id="explorer-table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Title</th>
+                            <th>Org Type</th>
+                            <th>Region</th>
+                            <th>Year</th>
+                            <th>Binding</th>
+                            <th>Type</th>
+                            <th>Genome</th>
+                            <th>Ont</th>
+                            <th>Tax</th>
+                        </tr>
+                    </thead>
+                    <tbody id="explorer-tbody">
+                        <!-- JS will populate -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ==================== Footer ==================== -->
+<footer class="footer">
+    <div>Tapestry Census Explorer &mdash; 3,044 AI Governance Statements &mdash; Tapestry (Lin, 2026) &mdash; Generated 2026-03-28</div>
+    <div class="footer-disclosure">Analytical perspectives in this dashboard are heuristic devices representing disciplinary lenses applied through AI-assisted analysis. They are not endorsements by named external scholars.</div>
+</footer>
+
+<!-- External Scripts -->
+<script src="data.js"></script>
+<script src="texts.js"></script>
+<script src="findings_data.js"></script>
+<script src="findings_texts.js"></script>
+<script src="findings_literature.js"></script>
+<script src="statement_details.js"></script>
+<script src="app.js"></script>
+<script src="charts.js"></script>
+<script src="findings_charts.js"></script>
+
+<!-- Statement Detail Modal -->
+<div class="stmt-modal-overlay" id="stmt-modal-overlay">
+    <div class="stmt-modal">
+        <button class="stmt-modal-close" id="stmt-modal-close">&times;</button>
+        <div class="stmt-modal-header" id="stmt-modal-header"></div>
+        <div class="stmt-modal-body" id="stmt-modal-body"></div>
+    </div>
+</div>
+
+</body>
+</html>

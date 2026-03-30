@@ -412,7 +412,7 @@ const FINDINGS_TEXTS = {
   // ─────────────────────────────────────────────────────────
   noc2b: {
     title: "NoC2 Robustness Suite (NoC2b)",
-    subtitle: "Six follow-up analyses confirm and extend the form-vs-content decomposition",
+    subtitle: "Eight follow-up analyses confirm and extend the form-vs-content decomposition",
     confidence: "moderate",
     claim: "The NoC2 finding \u2014 that canonical policy families are driven primarily by institutional form rather than substantive content \u2014 is robust across four independent tests. Word-count normalization leaves content clusters virtually unchanged (ARI = 0.982). Form alone recovers 2.8x more canonical structure than content alone (C2-only ARI = 0.545 vs NoC2 ARI = 0.197). The NC3 convergence megacluster (n=732) has minimal internal structure (optimal k=2, partial family recovery), confirming genuine content convergence. And temporal analysis reveals that convergence is NOT accelerating \u2014 NC3\u2019s share has been stable at 30\u201339% since the corpus begins, though cluster composition does shift significantly over time (\u03c7\u00b2 p < 0.001).",
     evidence: [

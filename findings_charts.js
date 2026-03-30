@@ -1111,6 +1111,145 @@ function renderNoC2bCharts() {
             }]
         });
     }
+
+    // ── Chart 7: A8 Within-Archetype Heterogeneity (grouped bar) ──
+    var chart7 = _fMkChart('chart-noc2b-7');
+    if (chart7 && d.a8_heterogeneity) {
+        var hArch = d.a8_heterogeneity.archetypes;
+        var hNames = hArch.map(function(a) { return a.name; });
+        var hIntra = hArch.map(function(a) { return a.intraCosine; });
+        var hSil = hArch.map(function(a) { return a.silhouette; });
+        var hColors = hArch.map(function(a) {
+            return a.silhouette < 0.05 ? '#ef4444' : a.silhouette < 0.15 ? OI[0] : OI[2];
+        });
+
+        chart7.setOption({
+            tooltip: Object.assign(_fTooltip(), {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var idx = params[0].dataIndex;
+                    var a = hArch[idx];
+                    return '<strong>' + a.name + '</strong> (n=' + a.n + ')' +
+                        '<br/>Intra-cluster cosine: ' + a.intraCosine.toFixed(3) +
+                        '<br/>Silhouette: ' + a.silhouette.toFixed(3) +
+                        '<br/>Nearest: ' + a.nearest + ' (d=' + a.nearestDist.toFixed(3) + ')';
+                }
+            }),
+            legend: { data: ['Intra-Cluster Cosine Distance', 'Silhouette Score'], bottom: 0, textStyle: { color: '#94a3b8', fontSize: 10 } },
+            grid: { left: 60, right: 60, top: 50, bottom: 80 },
+            xAxis: {
+                type: 'category',
+                data: hNames,
+                axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30, interval: 0 }
+            },
+            yAxis: [
+                { type: 'value', name: 'Cosine Distance', min: 0, max: 0.7, nameTextStyle: { color: '#94a3b8' }, axisLabel: { color: '#94a3b8' }, splitLine: { lineStyle: { color: '#1e293b' } } },
+                { type: 'value', name: 'Silhouette', min: -0.05, max: 0.5, nameTextStyle: { color: '#94a3b8' }, axisLabel: { color: '#94a3b8' }, splitLine: { show: false } }
+            ],
+            series: [
+                {
+                    name: 'Intra-Cluster Cosine Distance',
+                    type: 'bar',
+                    data: hIntra,
+                    itemStyle: { color: OI[1] },
+                    barWidth: '30%'
+                },
+                {
+                    name: 'Silhouette Score',
+                    type: 'bar',
+                    yAxisIndex: 1,
+                    data: hSil.map(function(v, i) { return { value: v, itemStyle: { color: hColors[i] } }; }),
+                    barWidth: '30%'
+                }
+            ],
+            graphic: [{
+                type: 'text',
+                left: 'center',
+                top: 5,
+                style: { text: 'Separation ratio = 0.358 — overlapping clusters; C2_5 silhouette \u2248 0', fill: '#ef4444', fontSize: 12, fontWeight: 'bold' }
+            }]
+        });
+    }
+
+    // ── Chart 8: A9 Bootstrap Stability CIs (error bar) ──
+    var chart8 = _fMkChart('chart-noc2b-8');
+    if (chart8 && d.a9_bootstrap) {
+        var bArch = d.a9_bootstrap.archetypes;
+        var bNames = bArch.map(function(a) { return a.name; });
+        var bJaccards = bArch.map(function(a) { return a.jaccard; });
+        var bLo = bArch.map(function(a) { return a.ci[0]; });
+        var bHi = bArch.map(function(a) { return a.ci[1]; });
+        var bColors = bArch.map(function(a) {
+            return a.jaccard < 0.6 ? '#ef4444' : a.jaccard < 0.7 ? OI[0] : OI[2];
+        });
+
+        chart8.setOption({
+            tooltip: Object.assign(_fTooltip(), {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var idx = params[0].dataIndex;
+                    var a = bArch[idx];
+                    return '<strong>' + a.name + '</strong>' +
+                        '<br/>Jaccard: ' + a.jaccard.toFixed(3) +
+                        '<br/>95% CI: [' + a.ci[0].toFixed(3) + ', ' + a.ci[1].toFixed(3) + ']' +
+                        '<br/>% Unstable: ' + a.pctUnstable + '%';
+                }
+            }),
+            legend: { data: ['Jaccard (500-iter)', '95% CI'], bottom: 0, textStyle: { color: '#94a3b8', fontSize: 10 } },
+            grid: { left: 60, right: 30, top: 50, bottom: 80 },
+            xAxis: {
+                type: 'category',
+                data: bNames,
+                axisLabel: { color: '#94a3b8', fontSize: 9, rotate: 30, interval: 0 }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Jaccard Index',
+                min: 0,
+                max: 1.0,
+                nameTextStyle: { color: '#94a3b8' },
+                axisLabel: { color: '#94a3b8' },
+                splitLine: { lineStyle: { color: '#1e293b' } }
+            },
+            series: [
+                {
+                    name: 'Jaccard (500-iter)',
+                    type: 'bar',
+                    data: bJaccards.map(function(v, i) { return { value: v, itemStyle: { color: bColors[i] } }; }),
+                    barWidth: '50%'
+                },
+                {
+                    name: '95% CI',
+                    type: 'custom',
+                    renderItem: function(params, api) {
+                        var xVal = api.value(0);
+                        var lo = api.value(1);
+                        var hi = api.value(2);
+                        var coordHi = api.coord([xVal, hi]);
+                        var coordLo = api.coord([xVal, lo]);
+                        var halfWidth = 8;
+                        return {
+                            type: 'group',
+                            children: [
+                                { type: 'line', shape: { x1: coordHi[0], y1: coordHi[1], x2: coordLo[0], y2: coordLo[1] }, style: { stroke: '#f1f5f9', lineWidth: 2 } },
+                                { type: 'line', shape: { x1: coordHi[0] - halfWidth, y1: coordHi[1], x2: coordHi[0] + halfWidth, y2: coordHi[1] }, style: { stroke: '#f1f5f9', lineWidth: 2 } },
+                                { type: 'line', shape: { x1: coordLo[0] - halfWidth, y1: coordLo[1], x2: coordLo[0] + halfWidth, y2: coordLo[1] }, style: { stroke: '#f1f5f9', lineWidth: 2 } }
+                            ]
+                        };
+                    },
+                    encode: { x: 0, y: [1, 2] },
+                    data: bArch.map(function(a, i) { return [i, a.ci[0], a.ci[1]]; }),
+                    z: 10
+                }
+            ],
+            graphic: [{
+                type: 'text',
+                left: 'center',
+                top: 5,
+                style: { text: 'C2_5 weakest (0.576) but defensible — 26.4% swing to Principle Framers', fill: '#ef4444', fontSize: 12, fontWeight: 'bold' }
+            }]
+        });
+    }
 }
 
 

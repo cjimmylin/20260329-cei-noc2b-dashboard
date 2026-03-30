@@ -1706,6 +1706,39 @@ const FINDINGS_DATA = {
       "chi2": 7.373,
       "pValue": 0.0609,
       "significant": false
+    },
+    "a8_heterogeneity": {
+      "archetypes": [
+        { "name": "National Strategists", "n": 369, "intraCosine": 0.3138, "silhouette": 0.3869, "nearest": "Principle Framers", "nearestDist": 0.2816 },
+        { "name": "Sovereign Regulators", "n": 351, "intraCosine": 0.4274, "silhouette": 0.1323, "nearest": "Standards Engineers", "nearestDist": 0.1962 },
+        { "name": "Principle Framers", "n": 259, "intraCosine": 0.3989, "silhouette": 0.1755, "nearest": "Rights Advocates", "nearestDist": 0.2027 },
+        { "name": "Sacred Authorities", "n": 115, "intraCosine": 0.4508, "silhouette": 0.2542, "nearest": "Principle Framers", "nearestDist": 0.374 },
+        { "name": "Standards Engineers", "n": 154, "intraCosine": 0.4198, "silhouette": 0.1643, "nearest": "Sovereign Regulators", "nearestDist": 0.1962 },
+        { "name": "Aspirational Signatories", "n": 178, "intraCosine": 0.5473, "silhouette": 0.0056, "nearest": "Principle Framers", "nearestDist": 0.2451 },
+        { "name": "Self-Regulators", "n": 169, "intraCosine": 0.4131, "silhouette": 0.1798, "nearest": "Prof. Gatekeepers", "nearestDist": 0.2569 },
+        { "name": "Prof. Gatekeepers", "n": 190, "intraCosine": 0.4207, "silhouette": 0.1852, "nearest": "Self-Regulators", "nearestDist": 0.2569 },
+        { "name": "Rights Advocates", "n": 236, "intraCosine": 0.5125, "silhouette": 0.0551, "nearest": "Principle Framers", "nearestDist": 0.2027 }
+      ],
+      "separationRatio": 0.3584,
+      "minInter": 0.1962,
+      "maxIntraMean": 0.5473
+    },
+    "a9_bootstrap": {
+      "nIterations": 500,
+      "archetypes": [
+        { "name": "National Strategists", "jaccard": 0.7653, "ci": [0.7161, 0.8041], "pctUnstable": 1.9 },
+        { "name": "Sovereign Regulators", "jaccard": 0.7217, "ci": [0.355, 0.8034], "pctUnstable": 3.7 },
+        { "name": "Principle Framers", "jaccard": 0.6351, "ci": [0.3959, 0.754], "pctUnstable": 9.65 },
+        { "name": "Sacred Authorities", "jaccard": 0.7665, "ci": [0.5027, 0.8534], "pctUnstable": 0.87 },
+        { "name": "Standards Engineers", "jaccard": 0.683, "ci": [0.0167, 0.8159], "pctUnstable": 3.9 },
+        { "name": "Aspirational Signatories", "jaccard": 0.5756, "ci": [0.1582, 0.7941], "pctUnstable": 26.4 },
+        { "name": "Self-Regulators", "jaccard": 0.7298, "ci": [0.4798, 0.8294], "pctUnstable": 2.96 },
+        { "name": "Prof. Gatekeepers", "jaccard": 0.7189, "ci": [0.4857, 0.8116], "pctUnstable": 5.79 },
+        { "name": "Rights Advocates", "jaccard": 0.7084, "ci": [0.6128, 0.7954], "pctUnstable": 0.42 }
+      ],
+      "c2_5_swing": { "nTotal": 178, "nSwing": 47, "pctSwing": 26.4, "topDestination": "Principle Framers", "topDestFraction": 0.622 },
+      "recommendation": "DEFENSIBLE AS DISTINCT",
+      "overallJaccard": 0.7005
     }
   },
   "noc2": {
